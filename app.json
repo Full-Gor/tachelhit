@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Tachelhit - ⵜⴰⵛⵍⵃⵉⵜ",
+    "slug": "tachelhit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#C41E3A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tachelhit.translator"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#C41E3A"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.tachelhit.translator"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "Application de traduction Tachelhit du Souss - Dictionnaire amazigh avec support Tifinagh et Latin"
+  }
+}
