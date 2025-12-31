@@ -4,14 +4,86 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
+  Pressable,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, borderRadius, spacing, fonts } from '../utils/theme';
+import { colors, shadows } from '../utils/theme';
 import { useApp } from '../context/AppContext';
 import EntryCard from '../components/EntryCard';
-import AmazighHeader from '../components/AmazighHeader';
+
+// Composant Bouton 3D
+function Button3D({
+  children,
+  onPress,
+  color = colors.buttonBlue,
+  colorLight = colors.buttonBlueLight,
+  style = {},
+}: {
+  children: React.ReactNode;
+  onPress: () => void;
+  color?: string;
+  colorLight?: string;
+  style?: object;
+}) {
+  const [pressed, setPressed] = React.useState(false);
+
+  return (
+    <Pressable
+      onPressIn={() => setPressed(true)}
+      onPressOut={() => setPressed(false)}
+      onPress={onPress}
+      style={[
+        {
+          backgroundColor: color,
+          borderRadius: 12,
+          paddingVertical: 10,
+          paddingHorizontal: 16,
+          borderWidth: 1,
+          borderColor: colorLight,
+          transform: [{ translateY: pressed ? 3 : 0 }],
+          ...shadows.button,
+          shadowOpacity: pressed ? 0.1 : 0.3,
+        },
+        style,
+      ]}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
+// Carte Glass
+function GlassCard({ children, style = {} }: { children: React.ReactNode; style?: object }) {
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: colors.glass,
+          borderRadius: 20,
+          borderWidth: 1,
+          borderColor: colors.glassBorder,
+          ...shadows.glass,
+        },
+        style,
+      ]}
+    >
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 1,
+          backgroundColor: colors.glassHighlight,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+        }}
+      />
+      {children}
+    </View>
+  );
+}
 
 export default function FavoritesScreen() {
   const { favorites, entries, history, clearHistory } = useApp();
@@ -40,172 +112,220 @@ export default function FavoritesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <AmazighHeader
-        title="Imuzar"
-        subtitle="Favoris & Historique"
-      />
+    <View style={{
+      flex: 1,
+      backgroundColor: colors.backgroundDark,
+    }}>
+      {/* Orbes décoratives */}
+      <View style={{
+        position: 'absolute',
+        top: 50,
+        right: -80,
+        width: 250,
+        height: 250,
+        borderRadius: 125,
+        backgroundColor: colors.buttonOrange,
+        opacity: 0.12,
+      }} />
+      <View style={{
+        position: 'absolute',
+        bottom: -50,
+        left: -60,
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        backgroundColor: colors.buttonPink,
+        opacity: 0.1,
+      }} />
 
-      <FlatList
-        data={[]}
-        keyExtractor={() => 'main'}
-        renderItem={null}
-        ListHeaderComponent={
-          <>
-            {/* Section Favoris */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>★ Mes Favoris</Text>
-                <Text style={styles.sectionCount}>{favoriteEntries.length}</Text>
-              </View>
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        {/* Header */}
+        <View style={{
+          paddingHorizontal: 20,
+          paddingTop: 16,
+          paddingBottom: 12,
+        }}>
+          <Text style={{
+            fontSize: 28,
+            fontWeight: 'bold',
+            color: colors.textPrimary,
+            textAlign: 'center',
+          }}>
+            ⵉⵎⵓⵣⴰⵔ
+          </Text>
+          <Text style={{
+            fontSize: 14,
+            color: colors.textSecondary,
+            textAlign: 'center',
+            marginTop: 4,
+          }}>
+            Favoris & Historique
+          </Text>
+        </View>
 
-              {favoriteEntries.length > 0 ? (
-                favoriteEntries.map(entry => (
-                  <EntryCard key={entry.id} entry={entry} showCategory />
-                ))
-              ) : (
-                <View style={styles.emptySection}>
-                  <Text style={styles.emptyIcon}>☆</Text>
-                  <Text style={styles.emptyText}>
-                    Aucun favori pour l'instant.{'\n'}
-                    Appuyez sur ★ dans le dictionnaire pour ajouter des favoris.
-                  </Text>
+        <FlatList
+          data={[]}
+          keyExtractor={() => 'main'}
+          renderItem={null}
+          ListHeaderComponent={
+            <>
+              {/* Section Favoris */}
+              <View style={{ marginTop: 16, paddingHorizontal: 20 }}>
+                <View style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 12,
+                }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 22, marginRight: 8 }}>★</Text>
+                    <Text style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: colors.textPrimary,
+                    }}>
+                      Mes Favoris
+                    </Text>
+                  </View>
+                  <View style={{
+                    backgroundColor: colors.primary,
+                    paddingHorizontal: 14,
+                    paddingVertical: 6,
+                    borderRadius: 20,
+                  }}>
+                    <Text style={{
+                      fontSize: 14,
+                      color: colors.textPrimary,
+                      fontWeight: 'bold',
+                    }}>
+                      {favoriteEntries.length}
+                    </Text>
+                  </View>
                 </View>
-              )}
-            </View>
 
-            {/* Section Historique */}
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>🕐 Historique</Text>
-                {history.length > 0 && (
-                  <TouchableOpacity onPress={handleClearHistory}>
-                    <Text style={styles.clearButton}>Effacer</Text>
-                  </TouchableOpacity>
+                {favoriteEntries.length > 0 ? (
+                  <View style={{ marginHorizontal: -20 }}>
+                    {favoriteEntries.map(entry => (
+                      <EntryCard key={entry.id} entry={entry} showCategory />
+                    ))}
+                  </View>
+                ) : (
+                  <GlassCard style={{ padding: 30, alignItems: 'center' }}>
+                    <Text style={{ fontSize: 48, marginBottom: 16, opacity: 0.4 }}>☆</Text>
+                    <Text style={{
+                      fontSize: 15,
+                      color: colors.textSecondary,
+                      textAlign: 'center',
+                      lineHeight: 22,
+                    }}>
+                      Aucun favori pour l'instant.{'\n'}
+                      Appuyez sur ★ dans le dictionnaire{'\n'}pour ajouter des favoris.
+                    </Text>
+                  </GlassCard>
                 )}
               </View>
 
-              {history.length > 0 ? (
-                history.map(item => (
-                  <View key={item.id} style={styles.historyItem}>
-                    <View style={styles.historyContent}>
-                      <Text style={styles.historySource}>{item.sourceText}</Text>
-                      <Text style={styles.historyArrow}>→</Text>
-                      <Text style={styles.historyTranslation}>{item.translatedText}</Text>
-                    </View>
-                    <Text style={styles.historyDate}>{formatDate(item.timestamp)}</Text>
+              {/* Section Historique */}
+              <View style={{ marginTop: 32, paddingHorizontal: 20 }}>
+                <View style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 12,
+                }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={{ fontSize: 22, marginRight: 8 }}>🕐</Text>
+                    <Text style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: colors.textPrimary,
+                    }}>
+                      Historique
+                    </Text>
                   </View>
-                ))
-              ) : (
-                <View style={styles.emptySection}>
-                  <Text style={styles.emptyIcon}>📝</Text>
-                  <Text style={styles.emptyText}>
-                    Aucune traduction dans l'historique.{'\n'}
-                    Vos traductions apparaîtront ici.
-                  </Text>
+                  {history.length > 0 && (
+                    <Button3D
+                      onPress={handleClearHistory}
+                      color={colors.error}
+                      colorLight="#ff6b6b"
+                      style={{ paddingVertical: 8, paddingHorizontal: 14 }}
+                    >
+                      <Text style={{
+                        fontSize: 13,
+                        color: colors.textPrimary,
+                        fontWeight: '600',
+                      }}>
+                        Effacer
+                      </Text>
+                    </Button3D>
+                  )}
                 </View>
-              )}
-            </View>
-          </>
-        }
-        contentContainerStyle={styles.content}
-      />
-    </SafeAreaView>
+
+                {history.length > 0 ? (
+                  history.map(item => (
+                    <GlassCard
+                      key={item.id}
+                      style={{
+                        marginBottom: 10,
+                        padding: 16,
+                      }}
+                    >
+                      <View style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}>
+                        <Text style={{
+                          fontSize: 15,
+                          color: colors.textPrimary,
+                          fontWeight: '500',
+                        }}>
+                          {item.sourceText}
+                        </Text>
+                        <Text style={{
+                          fontSize: 15,
+                          color: colors.primary,
+                          marginHorizontal: 10,
+                        }}>
+                          →
+                        </Text>
+                        <Text style={{
+                          fontSize: 15,
+                          color: colors.buttonGreen,
+                          fontWeight: '500',
+                        }}>
+                          {item.translatedText}
+                        </Text>
+                      </View>
+                      <Text style={{
+                        fontSize: 11,
+                        color: colors.textMuted,
+                        marginTop: 8,
+                      }}>
+                        {formatDate(item.timestamp)}
+                      </Text>
+                    </GlassCard>
+                  ))
+                ) : (
+                  <GlassCard style={{ padding: 30, alignItems: 'center' }}>
+                    <Text style={{ fontSize: 48, marginBottom: 16, opacity: 0.4 }}>📝</Text>
+                    <Text style={{
+                      fontSize: 15,
+                      color: colors.textSecondary,
+                      textAlign: 'center',
+                      lineHeight: 22,
+                    }}>
+                      Aucune traduction dans l'historique.{'\n'}
+                      Vos traductions apparaîtront ici.
+                    </Text>
+                  </GlassCard>
+                )}
+              </View>
+            </>
+          }
+          contentContainerStyle={{ paddingBottom: 100 }}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    paddingBottom: spacing.xxl,
-  },
-  section: {
-    marginTop: spacing.lg,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  sectionTitle: {
-    fontSize: fonts.sizes.xl,
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  sectionCount: {
-    fontSize: fonts.sizes.md,
-    color: colors.primary,
-    fontWeight: 'bold',
-    backgroundColor: colors.card,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.round,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    overflow: 'hidden',
-  },
-  clearButton: {
-    fontSize: fonts.sizes.md,
-    color: colors.error,
-    fontWeight: '600',
-  },
-  emptySection: {
-    alignItems: 'center',
-    padding: spacing.xl,
-    marginHorizontal: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  emptyIcon: {
-    fontSize: 40,
-    marginBottom: spacing.md,
-    opacity: 0.5,
-  },
-  emptyText: {
-    fontSize: fonts.sizes.md,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  historyItem: {
-    backgroundColor: colors.surface,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.xs,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  historyContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  historySource: {
-    fontSize: fonts.sizes.md,
-    color: colors.text,
-    fontWeight: '500',
-  },
-  historyArrow: {
-    fontSize: fonts.sizes.md,
-    color: colors.primary,
-    marginHorizontal: spacing.sm,
-  },
-  historyTranslation: {
-    fontSize: fonts.sizes.md,
-    color: colors.secondary,
-    fontWeight: '500',
-  },
-  historyDate: {
-    fontSize: fonts.sizes.xs,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-});

@@ -3,10 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
 import { AppProvider } from './src/context/AppContext';
-import { colors } from './src/utils/theme';
+import { colors, shadows } from './src/utils/theme';
 
 import TranslateScreen from './src/screens/TranslateScreen';
 import DictionaryScreen from './src/screens/DictionaryScreen';
@@ -17,9 +17,37 @@ const Tab = createBottomTabNavigator();
 
 function TabIcon({ label, icon, focused }: { label: string; icon: string; focused: boolean }) {
   return (
-    <View style={styles.tabIcon}>
-      <Text style={[styles.tabEmoji, focused && styles.tabEmojiActive]}>{icon}</Text>
-      <Text style={[styles.tabLabel, focused && styles.tabLabelActive]}>{label}</Text>
+    <View style={{
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: 8,
+    }}>
+      <View style={{
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: focused ? colors.primary : 'transparent',
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...(focused ? {
+          ...shadows.glow(colors.primary),
+        } : {}),
+      }}>
+        <Text style={{
+          fontSize: 22,
+          opacity: focused ? 1 : 0.5,
+        }}>
+          {icon}
+        </Text>
+      </View>
+      <Text style={{
+        fontSize: 10,
+        color: focused ? colors.textPrimary : colors.textMuted,
+        marginTop: 4,
+        fontWeight: focused ? '600' : '400',
+      }}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -32,7 +60,15 @@ export default function App() {
           <Tab.Navigator
             screenOptions={{
               headerShown: false,
-              tabBarStyle: styles.tabBar,
+              tabBarStyle: {
+                backgroundColor: colors.backgroundMid,
+                borderTopWidth: 1,
+                borderTopColor: colors.glassBorder,
+                height: 80,
+                paddingBottom: 12,
+                paddingTop: 4,
+                ...shadows.glass,
+              },
               tabBarShowLabel: false,
             }}
           >
@@ -79,39 +115,3 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: colors.surface,
-    borderTopWidth: 2,
-    borderTopColor: colors.primary,
-    height: 70,
-    paddingBottom: 8,
-    paddingTop: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  tabIcon: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tabEmoji: {
-    fontSize: 24,
-    opacity: 0.6,
-  },
-  tabEmojiActive: {
-    opacity: 1,
-  },
-  tabLabel: {
-    fontSize: 11,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
-  tabLabelActive: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-});

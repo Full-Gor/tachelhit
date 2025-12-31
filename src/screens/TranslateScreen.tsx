@@ -4,18 +4,177 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Animated,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, borderRadius, spacing, fonts } from '../utils/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, borderRadius, spacing, fonts, shadows } from '../utils/theme';
 import { useApp, Language } from '../context/AppContext';
 import { LanguageButton } from '../components/LanguageSelector';
 import LanguageSelector from '../components/LanguageSelector';
 import TifinaghKeyboard from '../components/TifinaghKeyboard';
-import AmazighHeader from '../components/AmazighHeader';
+
+// Composant bouton 3D avec effet pressé
+function Button3D({
+  children,
+  onPress,
+  colors: buttonColors,
+  style = {}
+}: {
+  children: React.ReactNode;
+  onPress: () => void;
+  colors: string[];
+  style?: any;
+}) {
+  const [isPressed, setIsPressed] = useState(false);
+
+  return (
+    <Pressable
+      onPressIn={() => setIsPressed(true)}
+      onPressOut={() => setIsPressed(false)}
+      onPress={onPress}
+      style={[
+        {
+          borderRadius: 25,
+          transform: [{ translateY: isPressed ? 2 : 0 }],
+        },
+        style,
+      ]}
+    >
+      <View
+        style={{
+          backgroundColor: buttonColors[1],
+          borderRadius: 25,
+          paddingBottom: isPressed ? 0 : 4,
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: buttonColors[0],
+            borderRadius: 25,
+            paddingVertical: 14,
+            paddingHorizontal: 28,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.2)',
+            borderBottomColor: 'rgba(0,0,0,0.2)',
+          }}
+        >
+          {children}
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+// Composant carte glassmorphique
+function GlassCard({ children, style = {} }: { children: React.ReactNode; style?: any }) {
+  return (
+    <View
+      style={[
+        {
+          backgroundColor: colors.glass,
+          borderRadius: borderRadius.xl,
+          borderWidth: 1,
+          borderColor: colors.glassBorder,
+          padding: spacing.lg,
+          ...shadows.glass,
+        },
+        style,
+      ]}
+    >
+      {/* Effet de lumière en haut */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 20,
+          right: 20,
+          height: 1,
+          backgroundColor: colors.glassHighlight,
+          borderRadius: 1,
+        }}
+      />
+      {children}
+    </View>
+  );
+}
+
+// Composant slider/toggle neumorphique
+function NeumorphicToggle({
+  options,
+  selected,
+  onSelect
+}: {
+  options: { key: string; label: string }[];
+  selected: string;
+  onSelect: (key: string) => void;
+}) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        backgroundColor: colors.neuDark,
+        borderRadius: borderRadius.pill,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.5,
+        shadowRadius: 8,
+        elevation: 8,
+      }}
+    >
+      {options.map((option) => (
+        <TouchableOpacity
+          key={option.key}
+          onPress={() => onSelect(option.key)}
+          style={{
+            flex: 1,
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            borderRadius: borderRadius.pill,
+            backgroundColor: selected === option.key ? colors.primary : 'transparent',
+            alignItems: 'center',
+            ...(selected === option.key ? shadows.button : {}),
+          }}
+        >
+          <Text
+            style={{
+              color: selected === option.key ? colors.textPrimary : colors.textSecondary,
+              fontSize: fonts.sizes.md,
+              fontWeight: selected === option.key ? '700' : '500',
+            }}
+          >
+            {option.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+// Icône SVG Soleil
+function SunIcon({ size = 24, color = colors.tertiary }: { size?: number; color?: string }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: size * 0.8, color }}>☀️</Text>
+    </View>
+  );
+}
+
+// Icône SVG Lune
+function MoonIcon({ size = 24, color = colors.textMuted }: { size?: number; color?: string }) {
+  return (
+    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: size * 0.8, color }}>🌙</Text>
+    </View>
+  );
+}
 
 export default function TranslateScreen() {
   const {
@@ -42,7 +201,7 @@ export default function TranslateScreen() {
       return;
     }
     const result = translate(sourceText, sourceLang, targetLang);
-    setTranslatedText(result || 'Traduction non trouvée dans le dictionnaire');
+    setTranslatedText(result || 'Traduction non trouvée');
 
     if (result) {
       addToHistory({
@@ -56,7 +215,7 @@ export default function TranslateScreen() {
 
   const handleSwap = () => {
     const tempText = sourceText;
-    setSourceText(translatedText !== 'Traduction non trouvée dans le dictionnaire' ? translatedText : '');
+    setSourceText(translatedText !== 'Traduction non trouvée' ? translatedText : '');
     setTranslatedText(tempText ? translate(translatedText, targetLang, sourceLang) : '');
     swapLanguages();
   };
@@ -74,144 +233,417 @@ export default function TranslateScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <AmazighHeader
-        title="ⵜⴰⵛⵍⵃⵉⵜ"
-        subtitle="Traducteur Tachelhit du Souss"
-      />
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.content}
+    <View style={{ flex: 1, backgroundColor: colors.backgroundDark }}>
+      {/* Background gradient */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: colors.backgroundDark,
+        }}
       >
-        <ScrollView style={styles.scrollView}>
-          {/* Sélecteur de langues */}
-          <View style={styles.languageBar}>
-            <LanguageButton
-              lang={sourceLang}
-              onPress={() => setShowSourceLangPicker(true)}
-            />
-            <TouchableOpacity style={styles.swapButton} onPress={handleSwap}>
-              <Text style={styles.swapIcon}>⇄</Text>
-            </TouchableOpacity>
-            <LanguageButton
-              lang={targetLang}
-              onPress={() => setShowTargetLangPicker(true)}
-            />
-          </View>
+        {/* Orbe de lumière décoratif */}
+        <View
+          style={{
+            position: 'absolute',
+            top: -100,
+            right: -100,
+            width: 300,
+            height: 300,
+            borderRadius: 150,
+            backgroundColor: colors.primary,
+            opacity: 0.1,
+          }}
+        />
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            left: -50,
+            width: 200,
+            height: 200,
+            borderRadius: 100,
+            backgroundColor: colors.buttonPurple,
+            opacity: 0.08,
+          }}
+        />
+      </View>
 
-          {/* Toggle Script pour Tachelhit */}
-          {(sourceLang === 'tachelhit' || targetLang === 'tachelhit') && (
-            <View style={styles.scriptToggle}>
-              <TouchableOpacity
-                style={[
-                  styles.scriptButton,
-                  currentScript === 'tifinagh' && styles.scriptButtonActive,
-                ]}
-                onPress={() => currentScript !== 'tifinagh' && toggleScript()}
-              >
-                <Text style={[
-                  styles.scriptText,
-                  currentScript === 'tifinagh' && styles.scriptTextActive,
-                ]}>
-                  ⵜⵉⴼⵉⵏⴰⵖ
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.scriptButton,
-                  currentScript === 'latin' && styles.scriptButtonActive,
-                ]}
-                onPress={() => currentScript !== 'latin' && toggleScript()}
-              >
-                <Text style={[
-                  styles.scriptText,
-                  currentScript === 'latin' && styles.scriptTextActive,
-                ]}>
-                  Latin
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {/* Zone de texte source */}
-          <View style={styles.inputContainer}>
-            <View style={styles.inputHeader}>
-              <Text style={styles.inputLabel}>Texte à traduire</Text>
-              {sourceLang === 'tachelhit' && (
-                <TouchableOpacity
-                  style={styles.keyboardToggle}
-                  onPress={() => setShowTifinaghKeyboard(!showTifinaghKeyboard)}
-                >
-                  <Text style={styles.keyboardToggleText}>
-                    {showTifinaghKeyboard ? '⌨️ ABC' : 'ⵜⵉⴼ ⵣ'}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-            <TextInput
-              style={[
-                styles.textInput,
-                sourceLang === 'tachelhit' && styles.tifinaghInput,
-              ]}
-              placeholder="Entrez votre texte..."
-              placeholderTextColor={colors.textSecondary}
-              value={sourceText}
-              onChangeText={setSourceText}
-              multiline
-              textAlignVertical="top"
-            />
-            {sourceText.length > 0 && (
-              <TouchableOpacity
-                style={styles.clearButton}
-                onPress={() => {
-                  setSourceText('');
-                  setTranslatedText('');
+      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+        {/* Header Dashboard */}
+        <View
+          style={{
+            paddingHorizontal: spacing.lg,
+            paddingVertical: spacing.xl,
+          }}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <View>
+              <Text
+                style={{
+                  fontSize: fonts.sizes.hero,
+                  fontWeight: '700',
+                  color: colors.textPrimary,
+                  letterSpacing: -1,
                 }}
               >
-                <Text style={styles.clearButtonText}>✕</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Bouton traduire */}
-          <TouchableOpacity style={styles.translateButton} onPress={handleTranslate}>
-            <Text style={styles.translateButtonText}>Traduire</Text>
-            <Text style={styles.translateButtonIcon}>→</Text>
-          </TouchableOpacity>
-
-          {/* Zone de traduction */}
-          <View style={styles.outputContainer}>
-            <Text style={styles.outputLabel}>Traduction</Text>
-            <View style={styles.outputBox}>
-              <Text style={[
-                styles.outputText,
-                targetLang === 'tachelhit' && styles.tifinaghOutput,
-                targetLang === 'arabic' && styles.arabicOutput,
-              ]}>
-                {translatedText || 'La traduction apparaîtra ici...'}
+                ⵜⴰⵛⵍⵃⵉⵜ
+              </Text>
+              <Text
+                style={{
+                  fontSize: fonts.sizes.md,
+                  color: colors.textSecondary,
+                  marginTop: 4,
+                }}
+              >
+                Traducteur • Souss
               </Text>
             </View>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: colors.glass,
+                borderWidth: 1,
+                borderColor: colors.glassBorder,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 24 }}>🔍</Text>
+            </View>
           </View>
+        </View>
 
-          {/* Note informative */}
-          <View style={styles.infoBox}>
-            <Text style={styles.infoIcon}>ℹ️</Text>
-            <Text style={styles.infoText}>
-              Ce traducteur utilise un dictionnaire local du Tachelhit du Souss.
-              Explorez le dictionnaire pour découvrir plus de mots et expressions.
-            </Text>
-          </View>
-        </ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingHorizontal: spacing.lg, paddingBottom: spacing.xxl }}
+          >
+            {/* Boutons de catégorie style maquette */}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: spacing.xl,
+              }}
+            >
+              <Button3D
+                colors={[colors.buttonBlue, colors.buttonBlueLight]}
+                onPress={() => setShowSourceLangPicker(true)}
+                style={{ flex: 1, marginRight: 8 }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: fonts.sizes.md }}>
+                  {sourceLang === 'tachelhit' ? 'ⵜⴰⵛⵍⵃⵉⵜ' : sourceLang === 'french' ? 'Français' : sourceLang === 'arabic' ? 'العربية' : 'English'}
+                </Text>
+              </Button3D>
 
-        {/* Clavier Tifinagh */}
-        <TifinaghKeyboard
-          visible={showTifinaghKeyboard && sourceLang === 'tachelhit'}
-          onCharacterPress={handleTifinaghChar}
-          onBackspace={handleBackspace}
-          onSpace={handleSpace}
-        />
-      </KeyboardAvoidingView>
+              <Button3D
+                colors={[colors.buttonPurple, colors.buttonPurpleLight]}
+                onPress={() => setShowTargetLangPicker(true)}
+                style={{ flex: 1, marginLeft: 8 }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: fonts.sizes.md }}>
+                  {targetLang === 'tachelhit' ? 'ⵜⴰⵛⵍⵃⵉⵜ' : targetLang === 'french' ? 'Français' : targetLang === 'arabic' ? 'العربية' : 'English'}
+                </Text>
+              </Button3D>
+            </View>
+
+            {/* Boutons secondaires */}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: spacing.xl,
+              }}
+            >
+              <Button3D
+                colors={[colors.buttonOrange, colors.buttonOrangeLight]}
+                onPress={handleSwap}
+                style={{ flex: 1, marginRight: 8 }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: fonts.sizes.sm }}>
+                  ⇄ Inverser
+                </Text>
+              </Button3D>
+
+              <Button3D
+                colors={[colors.buttonPink, colors.buttonPinkLight]}
+                onPress={() => setShowTifinaghKeyboard(!showTifinaghKeyboard)}
+                style={{ flex: 1, marginLeft: 8 }}
+              >
+                <Text style={{ color: '#fff', fontWeight: '600', fontSize: fonts.sizes.sm }}>
+                  ⵣ Tifinagh
+                </Text>
+              </Button3D>
+            </View>
+
+            {/* Toggle Script */}
+            {(sourceLang === 'tachelhit' || targetLang === 'tachelhit') && (
+              <View style={{ marginBottom: spacing.xl }}>
+                <NeumorphicToggle
+                  options={[
+                    { key: 'tifinagh', label: 'ⵜⵉⴼⵉⵏⴰⵖ' },
+                    { key: 'latin', label: 'Latin' },
+                  ]}
+                  selected={currentScript}
+                  onSelect={(key) => {
+                    if (key !== currentScript) toggleScript();
+                  }}
+                />
+              </View>
+            )}
+
+            {/* Carte d'entrée glassmorphique */}
+            <GlassCard style={{ marginBottom: spacing.lg }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: spacing.md,
+                }}
+              >
+                <Text style={{ color: colors.textSecondary, fontSize: fonts.sizes.sm, fontWeight: '600' }}>
+                  Texte à traduire
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <SunIcon size={20} />
+                  <View
+                    style={{
+                      width: 44,
+                      height: 24,
+                      backgroundColor: colors.neuDark,
+                      borderRadius: 12,
+                      marginHorizontal: 8,
+                      justifyContent: 'center',
+                      paddingHorizontal: 2,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        backgroundColor: colors.textMuted,
+                        borderRadius: 10,
+                        alignSelf: 'flex-end',
+                      }}
+                    />
+                  </View>
+                  <MoonIcon size={18} />
+                </View>
+              </View>
+
+              <View
+                style={{
+                  backgroundColor: colors.neuDark,
+                  borderRadius: borderRadius.lg,
+                  padding: spacing.md,
+                  minHeight: 120,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 4, height: 4 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
+              >
+                <TextInput
+                  style={{
+                    fontSize: sourceLang === 'tachelhit' ? fonts.sizes.xl : fonts.sizes.lg,
+                    color: colors.textPrimary,
+                    minHeight: 100,
+                    textAlignVertical: 'top',
+                  }}
+                  placeholder="Entrez votre texte..."
+                  placeholderTextColor={colors.textMuted}
+                  value={sourceText}
+                  onChangeText={setSourceText}
+                  multiline
+                />
+              </View>
+
+              {sourceText.length > 0 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSourceText('');
+                    setTranslatedText('');
+                  }}
+                  style={{
+                    position: 'absolute',
+                    right: spacing.lg,
+                    top: spacing.lg + 40,
+                    width: 28,
+                    height: 28,
+                    borderRadius: 14,
+                    backgroundColor: colors.error,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✕</Text>
+                </TouchableOpacity>
+              )}
+            </GlassCard>
+
+            {/* Bouton Traduire */}
+            <View style={{ marginBottom: spacing.lg }}>
+              <Button3D
+                colors={[colors.primary, colors.primaryLight]}
+                onPress={handleTranslate}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ color: '#fff', fontWeight: '700', fontSize: fonts.sizes.lg, marginRight: 8 }}>
+                    Traduire
+                  </Text>
+                  <Text style={{ color: '#fff', fontSize: fonts.sizes.xl }}>→</Text>
+                </View>
+              </Button3D>
+            </View>
+
+            {/* Carte de sortie glassmorphique */}
+            <GlassCard style={{ borderColor: colors.buttonGreen, borderWidth: 2 }}>
+              <Text
+                style={{
+                  color: colors.buttonGreen,
+                  fontSize: fonts.sizes.sm,
+                  fontWeight: '600',
+                  marginBottom: spacing.md,
+                }}
+              >
+                Traduction
+              </Text>
+              <View
+                style={{
+                  minHeight: 80,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: targetLang === 'tachelhit' ? fonts.sizes.xxl : fonts.sizes.lg,
+                    color: translatedText && translatedText !== 'Traduction non trouvée'
+                      ? colors.textPrimary
+                      : colors.textMuted,
+                    lineHeight: 32,
+                  }}
+                >
+                  {translatedText || 'La traduction apparaîtra ici...'}
+                </Text>
+              </View>
+            </GlassCard>
+
+            {/* Jauge de progression style maquette */}
+            <GlassCard style={{ marginTop: spacing.lg }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm }}>
+                <Text style={{ color: colors.textSecondary, fontSize: fonts.sizes.sm }}>Précision</Text>
+                <Text style={{ color: colors.buttonGreen, fontSize: fonts.sizes.sm, fontWeight: '600' }}>
+                  {translatedText && translatedText !== 'Traduction non trouvée' ? '100%' : '0%'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  height: 8,
+                  backgroundColor: colors.neuDark,
+                  borderRadius: 4,
+                  overflow: 'hidden',
+                }}
+              >
+                <View
+                  style={{
+                    width: translatedText && translatedText !== 'Traduction non trouvée' ? '100%' : '0%',
+                    height: '100%',
+                    backgroundColor: colors.buttonGreen,
+                    borderRadius: 4,
+                  }}
+                />
+              </View>
+
+              {/* Knob/curseur style maquette */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginTop: spacing.xl,
+                }}
+              >
+                <View style={{ alignItems: 'center' }}>
+                  <View
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 24,
+                      backgroundColor: colors.neuDark,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 4, height: 4 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 8,
+                      elevation: 6,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: colors.glassMedium,
+                        borderWidth: 2,
+                        borderColor: colors.glassBorder,
+                      }}
+                    />
+                  </View>
+                  <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.xs, marginTop: 8 }}>Vitesse</Text>
+                </View>
+
+                <View style={{ alignItems: 'center' }}>
+                  <View
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 24,
+                      backgroundColor: colors.neuDark,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 4, height: 4 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 8,
+                      elevation: 6,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: colors.glassMedium,
+                        borderWidth: 2,
+                        borderColor: colors.glassBorder,
+                      }}
+                    />
+                  </View>
+                  <Text style={{ color: colors.textMuted, fontSize: fonts.sizes.xs, marginTop: 8 }}>Qualité</Text>
+                </View>
+              </View>
+            </GlassCard>
+          </ScrollView>
+
+          {/* Clavier Tifinagh */}
+          <TifinaghKeyboard
+            visible={showTifinaghKeyboard && sourceLang === 'tachelhit'}
+            onCharacterPress={handleTifinaghChar}
+            onBackspace={handleBackspace}
+            onSpace={handleSpace}
+          />
+        </KeyboardAvoidingView>
+      </SafeAreaView>
 
       {/* Modals de sélection de langue */}
       <LanguageSelector
@@ -228,195 +660,6 @@ export default function TranslateScreen() {
         currentLang={targetLang}
         excludeLang={sourceLang}
       />
-    </SafeAreaView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    padding: spacing.md,
-  },
-  languageBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  swapButton: {
-    width: 44,
-    height: 44,
-    borderRadius: borderRadius.round,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  swapIcon: {
-    fontSize: 24,
-    color: colors.textLight,
-    fontWeight: 'bold',
-  },
-  scriptToggle: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.xs,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  scriptButton: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-  },
-  scriptButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  scriptText: {
-    fontSize: fonts.sizes.md,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  scriptTextActive: {
-    color: colors.textLight,
-  },
-  inputContainer: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    position: 'relative',
-  },
-  inputHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.sm,
-  },
-  inputLabel: {
-    fontSize: fonts.sizes.sm,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  keyboardToggle: {
-    backgroundColor: colors.tertiary,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-  },
-  keyboardToggleText: {
-    fontSize: fonts.sizes.sm,
-    color: colors.text,
-    fontWeight: 'bold',
-  },
-  textInput: {
-    fontSize: fonts.sizes.lg,
-    color: colors.text,
-    minHeight: 100,
-    textAlignVertical: 'top',
-  },
-  tifinaghInput: {
-    fontSize: fonts.sizes.xl,
-  },
-  clearButton: {
-    position: 'absolute',
-    right: spacing.md,
-    top: spacing.md,
-    padding: spacing.xs,
-  },
-  clearButtonText: {
-    fontSize: fonts.sizes.lg,
-    color: colors.textSecondary,
-  },
-  translateButton: {
-    flexDirection: 'row',
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.md,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  translateButtonText: {
-    fontSize: fonts.sizes.lg,
-    color: colors.textLight,
-    fontWeight: 'bold',
-    marginRight: spacing.sm,
-  },
-  translateButtonIcon: {
-    fontSize: fonts.sizes.xl,
-    color: colors.textLight,
-  },
-  outputContainer: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.md,
-    borderWidth: 2,
-    borderColor: colors.secondary,
-  },
-  outputLabel: {
-    fontSize: fonts.sizes.sm,
-    color: colors.secondary,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-  },
-  outputBox: {
-    minHeight: 80,
-  },
-  outputText: {
-    fontSize: fonts.sizes.lg,
-    color: colors.text,
-    lineHeight: 28,
-  },
-  tifinaghOutput: {
-    fontSize: fonts.sizes.xxl,
-    color: colors.primary,
-  },
-  arabicOutput: {
-    textAlign: 'left',
-    fontSize: fonts.sizes.xl,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.tertiary,
-  },
-  infoIcon: {
-    fontSize: 18,
-    marginRight: spacing.sm,
-  },
-  infoText: {
-    flex: 1,
-    fontSize: fonts.sizes.sm,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-});
