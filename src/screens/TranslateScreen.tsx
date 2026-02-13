@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Speech from 'expo-speech';
 import { colors, borderRadius, spacing, fonts, shadows } from '../utils/theme';
 import { useApp, Language } from '../context/AppContext';
 import { LanguageButton } from '../components/LanguageSelector';
@@ -186,11 +187,15 @@ export default function TranslateScreen() {
     currentScript,
     toggleScript,
     translate,
+    translateFull,
     addToHistory,
   } = useApp();
 
   const [sourceText, setSourceText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
+  const [phoneticText, setPhoneticText] = useState('');
+  const [latinText, setLatinText] = useState('');
+  const [tifinaghText, setTifinaghText] = useState('');
   const [showSourceLangPicker, setShowSourceLangPicker] = useState(false);
   const [showTargetLangPicker, setShowTargetLangPicker] = useState(false);
   const [showTifinaghKeyboard, setShowTifinaghKeyboard] = useState(false);
@@ -198,25 +203,43 @@ export default function TranslateScreen() {
   const handleTranslate = useCallback(() => {
     if (!sourceText.trim()) {
       setTranslatedText('');
+      setPhoneticText('');
+      setLatinText('');
+      setTifinaghText('');
       return;
     }
-    const result = translate(sourceText, sourceLang, targetLang);
-    setTranslatedText(result || 'Traduction non trouvée');
-
+    const result = translateFull(sourceText, sourceLang, targetLang);
     if (result) {
+      setTranslatedText(result.translation);
+      setPhoneticText(result.phonetic);
+      setLatinText(result.latin);
+      setTifinaghText(result.tifinagh);
       addToHistory({
         sourceText,
-        translatedText: result,
+        translatedText: result.translation,
         sourceLang,
         targetLang,
       });
+    } else {
+      setTranslatedText('Traduction non trouvée');
+      setPhoneticText('');
+      setLatinText('');
+      setTifinaghText('');
     }
-  }, [sourceText, sourceLang, targetLang, translate, addToHistory]);
+  }, [sourceText, sourceLang, targetLang, translateFull, addToHistory]);
+
+  const speakTranslation = () => {
+    if (!latinText) return;
+    // Utilise le latin comme approximation de prononciation
+    Speech.speak(latinText, { language: 'fr-FR', rate: 0.7 });
+  };
 
   const handleSwap = () => {
-    const tempText = sourceText;
     setSourceText(translatedText !== 'Traduction non trouvée' ? translatedText : '');
-    setTranslatedText(tempText ? translate(translatedText, targetLang, sourceLang) : '');
+    setTranslatedText('');
+    setPhoneticText('');
+    setLatinText('');
+    setTifinaghText('');
     swapLanguages();
   };
 
@@ -474,6 +497,9 @@ export default function TranslateScreen() {
                   onPress={() => {
                     setSourceText('');
                     setTranslatedText('');
+                    setPhoneticText('');
+                    setLatinText('');
+                    setTifinaghText('');
                   }}
                   style={{
                     position: 'absolute',
@@ -509,16 +535,32 @@ export default function TranslateScreen() {
 
             {/* Carte de sortie glassmorphique */}
             <GlassCard style={{ borderColor: colors.buttonGreen, borderWidth: 2 }}>
-              <Text
-                style={{
-                  color: colors.buttonGreen,
-                  fontSize: fonts.sizes.sm,
-                  fontWeight: '600',
-                  marginBottom: spacing.md,
-                }}
-              >
-                Traduction
-              </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md }}>
+                <Text
+                  style={{
+                    color: colors.buttonGreen,
+                    fontSize: fonts.sizes.sm,
+                    fontWeight: '600',
+                  }}
+                >
+                  Traduction
+                </Text>
+                {translatedText && translatedText !== 'Traduction non trouvée' && (
+                  <TouchableOpacity
+                    onPress={speakTranslation}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 18,
+                      backgroundColor: colors.primary,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text style={{ fontSize: 18 }}>🔊</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
               <View
                 style={{
                   minHeight: 80,
@@ -535,6 +577,33 @@ export default function TranslateScreen() {
                 >
                   {translatedText || 'La traduction apparaîtra ici...'}
                 </Text>
+
+                {/* Phonétique */}
+                {phoneticText && translatedText !== 'Traduction non trouvée' && (
+                  <Text
+                    style={{
+                      fontSize: fonts.sizes.md,
+                      color: colors.tertiary,
+                      marginTop: spacing.sm,
+                      fontStyle: 'italic',
+                    }}
+                  >
+                    🗣️ {phoneticText}
+                  </Text>
+                )}
+
+                {/* Tifinagh si on affiche en latin, ou Latin si on affiche en tifinagh */}
+                {targetLang === 'tachelhit' && translatedText !== 'Traduction non trouvée' && (
+                  <Text
+                    style={{
+                      fontSize: fonts.sizes.md,
+                      color: colors.textSecondary,
+                      marginTop: spacing.xs,
+                    }}
+                  >
+                    {currentScript === 'latin' ? `ⵜⵉⴼⵉⵏⴰⵖ: ${tifinaghText}` : `Latin: ${latinText}`}
+                  </Text>
+                )}
               </View>
             </GlassCard>
 

@@ -58,6 +58,7 @@ interface AppContextType {
 
   // Traduction
   translate: (text: string, from: Language, to: Language) => string;
+  translateFull: (text: string, from: Language, to: Language) => { translation: string; phonetic: string; latin: string; tifinagh: string } | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -66,8 +67,8 @@ const FAVORITES_KEY = '@tachelhit_favorites';
 const HISTORY_KEY = '@tachelhit_history';
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [sourceLang, setSourceLang] = useState<Language>('tachelhit');
-  const [targetLang, setTargetLang] = useState<Language>('french');
+  const [sourceLang, setSourceLang] = useState<Language>('french');
+  const [targetLang, setTargetLang] = useState<Language>('tachelhit');
   const [currentScript, setCurrentScript] = useState<Script>('tifinagh');
   const [favorites, setFavorites] = useState<string[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -177,41 +178,70 @@ export function AppProvider({ children }: { children: ReactNode }) {
     saveHistory([]);
   };
 
-  const translate = (text: string, from: Language, to: Language): string => {
+  const findBestMatch = (text: string, from: Language): DictionaryEntry | null => {
     const lowerText = text.toLowerCase().trim();
+    if (!lowerText) return null;
 
-    // Chercher une correspondance exacte
+    // 1. Correspondance exacte
     const exactMatch = entries.find(entry => {
       if (from === 'tachelhit') {
         return entry.latin.toLowerCase() === lowerText || entry.tifinagh === text;
       }
-      return entry[from as keyof DictionaryEntry]?.toString().toLowerCase() === lowerText;
+      const val = entry[from as keyof DictionaryEntry]?.toString().toLowerCase() || '';
+      return val === lowerText;
     });
+    if (exactMatch) return exactMatch;
 
-    if (exactMatch) {
-      if (to === 'tachelhit') {
-        return currentScript === 'tifinagh' ? exactMatch.tifinagh : exactMatch.latin;
-      }
-      return exactMatch[to as keyof DictionaryEntry]?.toString() || '';
-    }
-
-    // Chercher des correspondances partielles
-    const partialMatches = entries.filter(entry => {
+    // 2. Le champ contient le texte recherché (ex: "comment vas-tu" dans "comment vas-tu ? (masc.)")
+    const containsMatch = entries.find(entry => {
       if (from === 'tachelhit') {
         return entry.latin.toLowerCase().includes(lowerText) || entry.tifinagh.includes(text);
       }
-      return entry[from as keyof DictionaryEntry]?.toString().toLowerCase().includes(lowerText);
+      const val = entry[from as keyof DictionaryEntry]?.toString().toLowerCase() || '';
+      return val.includes(lowerText);
     });
+    if (containsMatch) return containsMatch;
 
-    if (partialMatches.length > 0) {
-      const match = partialMatches[0];
-      if (to === 'tachelhit') {
-        return currentScript === 'tifinagh' ? match.tifinagh : match.latin;
-      }
-      return match[to as keyof DictionaryEntry]?.toString() || '';
+    // 3. Le texte contient un des mots du champ (ex: "fruit" dans "fruits & légumes")
+    const reverseMatch = entries.find(entry => {
+      if (from === 'tachelhit') return false;
+      const val = entry[from as keyof DictionaryEntry]?.toString().toLowerCase() || '';
+      // Vérifier chaque alternative séparée par " / "
+      const alternatives = val.split(' / ');
+      return alternatives.some(alt => alt.trim().startsWith(lowerText) || lowerText.startsWith(alt.trim()));
+    });
+    if (reverseMatch) return reverseMatch;
+
+    return null;
+  };
+
+  const translate = (text: string, from: Language, to: Language): string => {
+    const match = findBestMatch(text, from);
+    if (!match) return '';
+
+    if (to === 'tachelhit') {
+      return currentScript === 'tifinagh' ? match.tifinagh : match.latin;
+    }
+    return match[to as keyof DictionaryEntry]?.toString() || '';
+  };
+
+  const translateFull = (text: string, from: Language, to: Language) => {
+    const match = findBestMatch(text, from);
+    if (!match) return null;
+
+    let translation: string;
+    if (to === 'tachelhit') {
+      translation = currentScript === 'tifinagh' ? match.tifinagh : match.latin;
+    } else {
+      translation = match[to as keyof DictionaryEntry]?.toString() || '';
     }
 
-    return '';
+    return {
+      translation,
+      phonetic: match.phonetic,
+      latin: match.latin,
+      tifinagh: match.tifinagh,
+    };
   };
 
   return (
@@ -236,6 +266,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       addToHistory,
       clearHistory,
       translate,
+      translateFull,
     }}>
       {children}
     </AppContext.Provider>
