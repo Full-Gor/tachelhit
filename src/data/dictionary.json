@@ -334,7 +334,51 @@
     { "id": "291", "latin": "tirga", "tifinagh": "ⵜⵉⵔⴳⴰ", "french": "rêve / espoir", "arabic": "حلم / أمل", "english": "dream / hope", "phonetic": "tir-ga", "category": "emotions" },
     { "id": "292", "latin": "tawda", "tifinagh": "ⵜⴰⵡⴷⴰ", "french": "fierté", "arabic": "فخر", "english": "pride", "phonetic": "taw-da", "category": "emotions" },
     { "id": "293", "latin": "ssbar", "tifinagh": "ⵙⵙⴱⴰⵔ", "french": "patience", "arabic": "صبر", "english": "patience", "phonetic": "ss-bar", "category": "emotions" },
-    { "id": "294", "latin": "laman", "tifinagh": "ⵍⴰⵎⴰⵏ", "french": "confiance / sécurité", "arabic": "أمان / ثقة", "english": "trust / safety", "phonetic": "la-man", "category": "emotions" }
+    { "id": "294", "latin": "laman", "tifinagh": "ⵍⴰⵎⴰⵏ", "french": "confiance / sécurité", "arabic": "أمان / ثقة", "english": "trust / safety", "phonetic": "la-man", "category": "emotions" },
+
+    { "id": "295", "latin": "amzil", "tifinagh": "ⴰⵎⵣⵉⵍ", "french": "bijoutier", "arabic": "صائغ", "english": "jeweler", "phonetic": "am-zil", "category": "crafts", "souss_note": "Artisan traditionnel du Souss" },
+    { "id": "296", "latin": "azetta", "tifinagh": "ⴰⵣⵟⵟⴰ", "french": "tissage / métier à tisser", "arabic": "نسيج", "english": "weaving / loom", "phonetic": "a-zet-ta", "category": "crafts", "souss_note": "Art textile amazighe" },
+    { "id": "297", "latin": "tazerbyt", "tifinagh": "ⵜⴰⵣⵔⴱⵢⵜ", "french": "tapis berbère", "arabic": "زربية", "english": "Berber carpet", "phonetic": "ta-zer-byt", "category": "crafts" },
+    { "id": "298", "latin": "asennej", "tifinagh": "ⴰⵙⵏⵏⵊ", "french": "sculpture sur bois", "arabic": "نحت على الخشب", "english": "wood carving", "phonetic": "a-sen-nej", "category": "crafts" },
+    { "id": "299", "latin": "tafza", "tifinagh": "ⵜⴰⴼⵣⴰ", "french": "poterie", "arabic": "فخار", "english": "pottery", "phonetic": "ta-fza", "category": "crafts" },
+    { "id": "300", "latin": "alebbus", "tifinagh": "ⴰⵍⴱⴱⵓⵙ", "french": "broderie", "arabic": "تطريز", "english": "embroidery", "phonetic": "a-leb-bous", "category": "crafts" },
+
+    { "id": "301", "latin": "takumlajt", "tifinagh": "ⵜⴰⴽⵓⵎⵍⴰⵊⵜ", "french": "chaussettes", "arabic": "جوارب", "english": "socks", "phonetic": "ta-koum-lajt", "category": "clothes" },
+    { "id": "302", "latin": "asaraw", "tifinagh": "ⴰⵙⴰⵔⴰⵡ", "french": "foulard", "arabic": "وشاح", "english": "scarf", "phonetic": "a-sa-raw", "category": "clothes" },
+    { "id": "303", "latin": "tarazit", "tifinagh": "ⵜⴰⵔⴰⵣⵉⵜ", "french": "bijou / parure", "arabic": "حلي", "english": "jewelry", "phonetic": "ta-ra-zit", "category": "clothes" },
+    { "id": "304", "latin": "taḍuṭṭ", "tifinagh": "ⵜⴰⴹⵓⵟⵟ", "french": "laine", "arabic": "صوف", "english": "wool", "phonetic": "ta-doutt", "category": "clothes" },
+    { "id": "305", "latin": "ildi", "tifinagh": "ⵉⵍⴷⵉ", "french": "cuir", "arabic": "جلد", "english": "leather", "phonetic": "il-di", "category": "clothes" },
+    { "id": "306", "latin": "agzum", "tifinagh": "ⴰⴳⵣⵓⵎ", "french": "ceinture", "arabic": "حزام", "english": "belt", "phonetic": "a-gzoum", "category": "clothes" },
+
+    { "id": "307", "latin": "taliwin", "tifinagh": "ⵜⴰⵍⵉⵡⵉⵏ", "french": "oasis (Taliouine)", "arabic": "واحة", "english": "oasis", "phonetic": "ta-li-win", "category": "places", "souss_note": "Capitale du safran dans le Souss" },
+    { "id": "308", "latin": "agadir", "tifinagh": "ⴰⴳⴰⴷⵉⵔ", "french": "grenier fortifié / ville", "arabic": "مخزن محصن / مدينة", "english": "fortified granary / city", "phonetic": "a-ga-dir", "category": "places", "souss_note": "Signifie grenier collectif en tachelhit" },
+    { "id": "309", "latin": "tigemmi", "tifinagh": "ⵜⵉⴳⵎⵎⵉ", "french": "kasbah / grande maison", "arabic": "قصبة", "english": "kasbah", "phonetic": "ti-gem-mi", "category": "places" },
+    { "id": "310", "latin": "taddart", "tifinagh": "ⵜⴰⴷⴷⴰⵔⵜ", "french": "village", "arabic": "قرية", "english": "village", "phonetic": "tad-dart", "category": "places" },
+    { "id": "311", "latin": "aẓawar", "tifinagh": "ⴰⵥⴰⵡⴰⵔ", "french": "cimetière", "arabic": "مقبرة", "english": "cemetery", "phonetic": "a-za-war", "category": "places" },
+    { "id": "312", "latin": "tafrawt", "tifinagh": "ⵜⴰⴼⵔⴰⵡⵜ", "french": "vallée / Tafraout", "arabic": "وادي / تافراوت", "english": "valley / Tafraout", "phonetic": "ta-frawt", "category": "places", "souss_note": "Ville célèbre de l'Anti-Atlas" },
+    { "id": "313", "latin": "lmdrasa", "tifinagh": "ⵍⵎⴷⵔⴰⵙⴰ", "french": "école", "arabic": "مدرسة", "english": "school", "phonetic": "l-mdra-sa", "category": "places" },
+
+    { "id": "314", "latin": "asafar s lkar", "tifinagh": "ⴰⵙⴰⴼⴰⵔ ⵙ ⵍⴽⴰⵔ", "french": "voyager en bus", "arabic": "السفر بالحافلة", "english": "travel by bus", "phonetic": "a-sa-far s l-kar", "category": "travel" },
+    { "id": "315", "latin": "tawwurt n uḍar", "tifinagh": "ⵜⴰⵡⵡⵓⵔⵜ ⵏ ⵓⴹⴰⵔ", "french": "gare routière", "arabic": "محطة الحافلات", "english": "bus station", "phonetic": "ta-wwourt n ou-dar", "category": "travel" },
+    { "id": "316", "latin": "talluft", "tifinagh": "ⵜⴰⵍⵍⵓⴼⵜ", "french": "voyage / tournée", "arabic": "جولة", "english": "trip / tour", "phonetic": "tal-louft", "category": "travel" },
+    { "id": "317", "latin": "amussu", "tifinagh": "ⴰⵎⵓⵙⵙⵓ", "french": "mouvement / déplacement", "arabic": "حركة", "english": "movement", "phonetic": "a-mous-sou", "category": "travel" },
+    { "id": "318", "latin": "amddakkʷl", "tifinagh": "ⴰⵎⴷⴷⴰⴽⵯⵍ", "french": "compagnon de voyage", "arabic": "رفيق السفر", "english": "travel companion", "phonetic": "a-med-da-kwel", "category": "travel" },
+    { "id": "319", "latin": "abrid igan", "tifinagh": "ⴰⴱⵔⵉⴷ ⵉⴳⴰⵏ", "french": "bon chemin", "arabic": "الطريق الصحيح", "english": "right path", "phonetic": "a-brid i-gan", "category": "travel" },
+
+    { "id": "320", "latin": "tagut", "tifinagh": "ⵜⴰⴳⵓⵜ", "french": "brouillard", "arabic": "ضباب", "english": "fog", "phonetic": "ta-gout", "category": "weather", "souss_note": "Fréquent dans les montagnes du Souss" },
+    { "id": "321", "latin": "asammaḍ", "tifinagh": "ⴰⵙⴰⵎⵎⴰⴹ", "french": "froid intense", "arabic": "برد شديد", "english": "intense cold", "phonetic": "a-sam-mad", "category": "weather" },
+    { "id": "322", "latin": "agris", "tifinagh": "ⴰⴳⵔⵉⵙ", "french": "gelée / gel", "arabic": "جليد / صقيع", "english": "frost", "phonetic": "a-gris", "category": "weather" },
+    { "id": "323", "latin": "tafsut", "tifinagh": "ⵜⴰⴼⵙⵓⵜ", "french": "printemps", "arabic": "ربيع", "english": "spring", "phonetic": "ta-fsout", "category": "weather" },
+    { "id": "324", "latin": "anebdu", "tifinagh": "ⴰⵏⴱⴷⵓ", "french": "été", "arabic": "صيف", "english": "summer", "phonetic": "a-neb-dou", "category": "weather" },
+    { "id": "325", "latin": "amwan", "tifinagh": "ⴰⵎⵡⴰⵏ", "french": "automne", "arabic": "خريف", "english": "autumn", "phonetic": "am-wan", "category": "weather" },
+    { "id": "326", "latin": "tagrist", "tifinagh": "ⵜⴰⴳⵔⵉⵙⵜ", "french": "hiver", "arabic": "شتاء", "english": "winter", "phonetic": "ta-grist", "category": "weather" },
+    { "id": "327", "latin": "tafukt tẓay", "tifinagh": "ⵜⴰⴼⵓⴽⵜ ⵜⵥⴰⵢ", "french": "soleil brûlant", "arabic": "شمس حارقة", "english": "blazing sun", "phonetic": "ta-foukt tzay", "category": "weather", "souss_note": "Typique de l'été dans le Souss" },
+
+    { "id": "328", "latin": "nniyet", "tifinagh": "ⵏⵏⵉⵢⵜ", "french": "intention / bonne foi", "arabic": "نية", "english": "intention / good faith", "phonetic": "nni-yet", "category": "emotions" },
+    { "id": "329", "latin": "tawant", "tifinagh": "ⵜⴰⵡⴰⵏⵜ", "french": "solidarité / entraide", "arabic": "تضامن", "english": "solidarity", "phonetic": "ta-want", "category": "emotions", "souss_note": "Valeur fondamentale de la culture soussi" },
+    { "id": "330", "latin": "ccuq", "tifinagh": "ⵛⵛⵓⵇ", "french": "nostalgie / manque", "arabic": "شوق", "english": "nostalgia / longing", "phonetic": "cchouq", "category": "emotions" },
+    { "id": "331", "latin": "lḥya", "tifinagh": "ⵍⵃⵢⴰ", "french": "pudeur / respect", "arabic": "حياء", "english": "modesty / respect", "phonetic": "l-hya", "category": "emotions" },
+    { "id": "332", "latin": "taɣawsa", "tifinagh": "ⵜⴰⵖⴰⵡⵙⴰ", "french": "problème / souci", "arabic": "مشكلة", "english": "problem / concern", "phonetic": "ta-ghaw-sa", "category": "emotions" }
   ],
   "alphabet": {
     "tifinagh": [
