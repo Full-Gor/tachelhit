@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
 } from 'react-native';
+import * as Speech from 'expo-speech';
 import { colors, shadows } from '../utils/theme';
 import { DictionaryEntry, useApp } from '../context/AppContext';
 
@@ -25,7 +26,24 @@ export default function EntryCard({ entry, showCategory = false }: EntryCardProp
     }
   };
 
+  const [speaking, setSpeaking] = useState(false);
   const category = categories.find(c => c.id === entry.category);
+
+  const speak = async (text: string, lang: string) => {
+    const isSpeaking = await Speech.isSpeakingAsync();
+    if (isSpeaking) {
+      await Speech.stop();
+      setSpeaking(false);
+      return;
+    }
+    setSpeaking(true);
+    Speech.speak(text, {
+      language: lang,
+      rate: 0.8,
+      onDone: () => setSpeaking(false),
+      onError: () => setSpeaking(false),
+    });
+  };
 
   return (
     <View style={{
@@ -125,7 +143,7 @@ export default function EntryCard({ entry, showCategory = false }: EntryCardProp
         ))}
       </View>
 
-      {/* Footer */}
+      {/* Footer - Audio & Phonetic */}
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -138,16 +156,58 @@ export default function EntryCard({ entry, showCategory = false }: EntryCardProp
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
+          gap: 8,
         }}>
-          <Text style={{ fontSize: 16, marginRight: 6 }}>🔊</Text>
-          <Text style={{
-            fontSize: 13,
-            color: colors.buttonGreen,
-            fontStyle: 'italic',
-          }}>
-            {entry.phonetic}
-          </Text>
+          <Pressable
+            onPress={() => speak(entry.french, 'fr-FR')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: speaking ? 'rgba(0, 204, 136, 0.2)' : colors.glassMedium,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 16,
+            }}
+          >
+            <Text style={{ fontSize: 14 }}>{speaking ? '⏹️' : '🔊'}</Text>
+            <Text style={{ fontSize: 11, color: colors.buttonGreen, marginLeft: 4 }}>FR</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => speak(entry.arabic, 'ar-SA')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.glassMedium,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 16,
+            }}
+          >
+            <Text style={{ fontSize: 14 }}>🔊</Text>
+            <Text style={{ fontSize: 11, color: colors.buttonGreen, marginLeft: 4 }}>AR</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => speak(entry.english, 'en-US')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.glassMedium,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 16,
+            }}
+          >
+            <Text style={{ fontSize: 14 }}>🔊</Text>
+            <Text style={{ fontSize: 11, color: colors.buttonGreen, marginLeft: 4 }}>EN</Text>
+          </Pressable>
         </View>
+        <Text style={{
+          fontSize: 13,
+          color: colors.buttonGreen,
+          fontStyle: 'italic',
+        }}>
+          {entry.phonetic}
+        </Text>
         {showCategory && category && (
           <View style={{
             flexDirection: 'row',
