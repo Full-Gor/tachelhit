@@ -404,7 +404,7 @@
     { "id": "350", "latin": "talafsa", "tifinagh": "ⵜⴰⵍⴰⴼⵙⴰ", "french": "navet", "arabic": "لفت", "english": "turnip", "phonetic": "ta-laf-sa", "category": "fruits" },
     { "id": "351", "latin": "tabṣlt", "tifinagh": "ⵜⴰⴱⵚⵍⵜ", "french": "poivron", "arabic": "فلفل", "english": "pepper", "phonetic": "tab-slt", "category": "fruits" },
     { "id": "352", "latin": "lbanan", "tifinagh": "ⵍⴱⴰⵏⴰⵏ", "french": "banane", "arabic": "موز", "english": "banana", "phonetic": "l-ba-nan", "category": "fruits" },
-    { "id": "431", "latin": "adas", "tifinagh": "ⴰⴷⴰⵙ", "french": "lentilles", "arabic": "عدس", "english": "lentils", "phonetic": "a-dass", "category": "fruits" },
+    { "id": "431", "latin": "tilintith", "tifinagh": "ⵜⵉⵍⵉⵏⵜⵉⵜⵀ", "french": "lentilles", "arabic": "عدس", "english": "lentils", "phonetic": "ti-lin-tith", "category": "fruits" },
 
     { "id": "353", "latin": "mamnk a tskrt?", "tifinagh": "ⵎⴰⵎⵏⴽ ⴰ ⵜⵙⴽⵔⵜ?", "french": "comment ça va ?", "arabic": "كيف حالك؟", "english": "how are you?", "phonetic": "mamn-k a tskrt", "category": "conversation", "souss_note": "Expression courante dans le Souss" },
     { "id": "354", "latin": "labas, lḥemdullah", "tifinagh": "ⵍⴰⴱⴰⵙ, ⵍⵃⵎⴷⵓⵍⵍⴰⵀ", "french": "ça va, Dieu merci", "arabic": "بخير، الحمد لله", "english": "fine, thank God", "phonetic": "la-bass, l-hem-dou-llah", "category": "conversation" },
